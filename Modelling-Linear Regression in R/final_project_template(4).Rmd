@@ -1,0 +1,172 @@
+
+## Packages and Data
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+# Replace the _____ with the correct file name
+df <- read_csv(here('data', 'bike_final(1).csv'))
+```
+
+## MODELING: First pair of variables
+
+### Question 1 	Identify the explanatory variable
+
+Ans: 	Temp (Represents the average daily temperature in degrees Fahrenheit)
+     	
+        
+
+### Question 2 	Identify the response variable
+
+Ans:Count(Number of Bikes rented on a particular day)
+
+### Question 3.	Create a linear regression model and display the full output of the model.
+
+```{r}
+m1 <- lm(count ~ temp, data = df)
+summary(m1)
+
+```
+
+```{r}
+	ggplot(df, aes(x = temp, y =count)) +
+	geom_point() +
+geom_abline(slope = 72.58, intercept = 1054.94)
+```
+
+
+
+### Question 4 	Using the variables noted in #1 and #2 above and the results of #3, write the equation for your model
+
+Ans: y^= 1054.95 +72.58*temp
+
+### Question 5 	Explain what the intercept means in the context of the data. 
+
+The number of bikes rented are expected to be around 1054.95 when the average daily temperature is at 0 degree Fahrenheit.
+
+
+### Question 6 	Is the intercept a useful/meaningful value in the context of our data? If yes, explain. If not, explain what purpose it serves. 
+
+The intercept of value 1054.95 is of no use in the context of our data. It is because there are no values in the dataset where the average temperature is 0 degree Fahrenheit.
+
+
+### Question 7 	Explain what the slope means in the context of the data. 
+
+The value of count of bikes rented increases by an average of 72.58 whenever the value of daily average temperature increases. 
+
+
+## MODELING: Second pair of variables
+
+Count vs Precipitation
+
+### Question 1 Identify the explanatory variable
+
+ Ans: •	Precipitation(Represents the amount of precipitation, measure in mm)
+ 
+### Question 2 Identify the response variable
+
+Ans:Count(Number of Bikes rented on a particular day)
+
+### Question 3 Create a linear regression model and display the full output of the model.
+
+```{r}
+m2 <- lm(count ~ precipitation, data = df)
+summary(m2)
+
+```
+
+```{r}
+	ggplot(df, aes(x = precipitation, y =count)) +
+	geom_point() +
+geom_abline(slope = 42.414, intercept = 2698.682)
+```
+
+
+
+### Question 4 Using the variables noted in #1 and #2 above and the results of #3, write the equation for your model
+
+Ans: y^= 2698.682 +42.414*precipitation
+
+### Question 5 Explain what the intercept means in the context of the data.
+
+The number of bikes rented are expected to be around 2698.682 when the precipitation is 0mm.
+
+### Question 6 Is the intercept a useful/meaningful value in the context of our data? If yes, explain. If not, explain what purpose it serves.
+
+In our dataset, we have a value of 0.433294266 for precipitation.
+The intercept of value 2698.682 cant be said as not meaningful.
+
+### Question 7 Explain what the slope means in the context of the data.
+
+The value of count of bikes rented increases by an average of 42.414 whenever the value of precipitation increases. 
+
+## MODEL ASSESSMENT
+
+### Question 1	Which metric can you use to choose between the two models you just created? 
+
+R squared value can be used to find the strength of fit of a linear model.
+
+### Question 2 	Explain what this metric means and why it is good for comparing models. 
+
+R suared value is computed by taking the square of the correlation coefficient.
+From the model, it explains the percent of variablility in the Count by the model.
+
+
+### Question 3	According to this metric, which model is the best of the two you created? Why? 
+
+The best of the two is Count vs Temperature model. It is because it has a higher value for R of 0.4114 square than the other two which is having R square value of 0.1851. The best fit for the model is given by the one having the highest R squared value.
+
+## MODEL DIAGNOSTICS
+
+### Question 1 	Create two new data columns based on your best model: predicted values for your response variable and the corresponding residuals
+
+```{r}
+mutate_df<-df %>% mutate(Predicted_Values= 1054.94 + 72.58 ∗temp, Residuals = count- Predicted_Values)
+mutate_df
+```
+
+### Question 2	Create a plot to check the assumption of linearity. State whether or not this condition is met and explain your reasoning. 
+
+```{r}
+ggplot(mutate_df,aes(x=mutate_df$temp, y=mutate_df$Residuals))+ geom_point()+geom_hline(yintercept=0)
+
+```
+
+From the above graph,we could see some specific pattern,so we could say the condition of linearity is not met.So a linear model is not appropriate to explain the relation between the Count and Daily Average Temperature.
+
+
+### Question 3	Create a plot to check the assumption of nearly normal residuals. State whether or not this condition is met and explain your reasoning. 
+
+```{r}
+ggplot(mutate_df, aes(x=Residuals)) + geom_histogram(bins=10,colour="black",fill="red")
+
+```
+
+
+From the above histogram, the residuals appears to be nearly normal.Because the histogram looks like a normal distrubtion having a unimodal,symmertic distribution.
+
+
+### Question 4	Create a plot to check the assumption of constant variability. State whether or not this condition is met and explain your reasoning. 
+
+```{r}
+
+ggplot(mutate_df,aes(x=mutate_df$temp, y=mutate_df$Residuals))+ geom_point()+geom_hline(yintercept=-2800,colour='Blue')+geom_hline(yintercept=2800,colour='Blue')+geom_hline(yintercept=0)
+
+```
+
+Almost all of the data points of Residuals are inside the two blue lines, which are at range of 2800 and -2800,we could say the condition of constant variability has also met.
+
+
+## CONCLUSION
+
+### Question 1	Based on the results of the “Model Diagnostics” section above, what can you conclude about your model? 
+
+
+Out of all the 3 conditions,the condition of linearity for the least squares is not met.
+So the relation between Count and Temperature cannot be best predicted best with linear model.
+
+
+
